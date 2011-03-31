@@ -1,0 +1,11 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =9
+let g:netrw_dirhist_1='/home/ishenkoyv/www/test'
+let g:netrw_dirhist_2='/home/ishenkoyv/.vim'
+let g:netrw_dirhist_3='/home/ishenkoyv/www/faithhighway'
+let g:netrw_dirhist_4='/home/ishenkoyv/www/faithhighway/application'
+let g:netrw_dirhist_5='/home/ishenkoyv/www/faithhighway/application/controllers'
+let g:netrw_dirhist_6='/home/ishenkoyv/www/faithhighway/system/vendor/swift/Swift'
+let g:netrw_dirhist_7='/home/ishenkoyv/www/test'
+let g:netrw_dirhist_8='/home/ishenkoyv/www/pinokio/skins/common/js/ckfinder'
+let g:netrw_dirhist_9='/home/ishenkoyv/www/test'
