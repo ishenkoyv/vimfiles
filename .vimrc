@@ -179,6 +179,7 @@ autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType c set omnifunc=ccomplete#Complete
 
 " Maps Omnicompletion to CTRL-space since ctrl-x ctrl-o is for Emacs-style RSI
+inoremap <Nul> <C-x><C-p>
 inoremap <Nul> <C-x><C-o>
 
 " don't select first item, follow typing in autocomplete
@@ -210,7 +211,7 @@ set formatoptions=qroct
 
 " The completion dictionary is provided by Rasmus:
 " http://lerdorf.com/funclist.txt
-set dictionary-=~/.phpfunclist.txt dictionary+=~/.phpfunclist.txt
+set dictionary-=~/.vim/phpfunclist.txt dictionary+=~/.vim/phpfunclist.txt
 " Use the dictionary completion
 set complete-=k complete+=k
 
