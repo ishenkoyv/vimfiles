@@ -1,23 +1,90 @@
+:filetype plugin on
+
+syntax on
+set nocompatible
+
+set autowrite
+set nobackup                    "bk:    does not write a persistent backup file of an edited file
+set writebackup                 "wb:    does keep a backup file while editing a file
+set hidden "persist undo history
+set autoread "re-read file has been changed automaticaly
+
 set ffs=unix,dos,mac
 set fencs=utf-8,cp1251,koi8-r,ucs-2,cp866
 
 set encoding=utf-8
 set fileencoding=utf-8
 
+set t_Co=256
+set bg=dark
+colorscheme desert256
+
+" Line width
+"set textwidth=79
+
+if v:version >= 703
+	" Highlight line bounds
+	set colorcolumn=80
+	"set mouse=a
+endif
+" Line break
+set linebreak
+
+set title
+" Show partial commands as you type them
+"
+set showcmd
+
+set ruler           " show the cursor position all the time
+set laststatus=2	" allways show status line
+set statusline=%<%F\ %r%h%y[%{&ff}][%{&encoding}]%m%=%-13.(%5l_%3c%V%)%5LL%8.P
+
+"set list "Show tabs, end of line etc.
+"set listchars=tab:▸\ ,eol:¬ 
+set listchars=tab:→\ ,eol:¬,trail:· 
+
+set foldmethod=marker           "fdm:   looks for patterns of triple-braces in a file
+set foldclose=all				" Autoclose folds, when moving out of them
+set foldcolumn=4                "fdc:   creates a small left-hand gutter for displaying fold info
+
+set scrolljump=5 				" Jump 5 lines when running out of the screen
+set scrolloff=3					" Indicate jump out of the screen when 3 lines before end of the screen
+
+" Repair wired terminal/vim settings
+set backspace=start,eol,indent
+
+" Allow file inline modelines to provide settings
+set modeline
+
+" Enable folding by fold markers
+" this causes vi problems 
+" set foldmethod=marker 
+
+" Correct indentation after opening a phpdocblock and automatic * on every line
+set formatoptions=qroct
+
+" Turns on auto indentation
+set ai
+set ci
+
 set autoindent 
 set softtabstop=4
 set tabstop=4
 set shiftwidth=4
 set shiftround                  "sr:    rounds indent to a multiple of shiftwidth
-"set smarttab
+set smarttab
 "set et
 "set wrapmargin=89
 
-set ai
-set ci
 
-set nobackup                    "bk:    does not write a persistent backup file of an edited file
-set writebackup                 "wb:    does keep a backup file while editing a file
+"do an incremental search
+set showmatch
+set hlsearch
+set incsearch
+set ignorecase
+set wrapscan
+set smartcase
+
 
 " Allow undoing insert-mode ctrl-u and ctrl-w
 inoremap <c-u> <c-g>u<c-u>
@@ -28,23 +95,22 @@ noremap ,<CR> :put_<CR>
 "Ctags background scan
 nmap <silent> <F4>
 \ :!ctags -f %:p:h/tags
+\ --links="yes"
 \ --langmap="php:+.php"
 \ -h ".php" -R --totals=yes 
 \ --exclude="\.svn"
 \ --exclude="*.js" 
-\ --tag-relative=yes --PHP-kinds=+cf-v %:p:h <CR>
+\ --tag-relative=yes --PHP-kinds=+cfiv %:p:h <CR>
 
 set tags=./tags,tags
 
 "Start NERDTree
-nmap <C-N>v :NERDTree<cr>
-vmap <C-N>v <esc>:NERDTree<cr>i
-imap <C-N>v <esc>:NERDTree<cr>i
-
-nmap <C-N>x :NERDTreeClose<cr>
-vmap <C-N>x <esc>:NERDTreeClose<cr>i
-imap <C-N>x <esc>:NERDTreeClose<cr>i
+nmap <F12> :NERDTreeToggle<cr>
+vmap <F12> <esc>:NERDTreeToggle<cr>
+imap <F12> <esc>:NERDTreeToggle<cr>
 "End NERDTree
+
+nmap <silent> <F3> :set list!<CR>
 
 "Start BufExplorer
 nmap <C-F5> <Esc>:BufExplorer<cr>
@@ -67,7 +133,6 @@ set pastetoggle=<F9>
 nnoremap <silent> <F8> :TlistToggle<CR>
 let tlist_php_settings = 'php;c:class;f:function'
 
-
 " Save the file
 nmap <F2> :w<cr>
 vmap <F2> <esc>:w<cr>i
@@ -77,53 +142,14 @@ imap <F2> <esc>:w<cr>i
 imap <F11> <Esc>:set<Space>nu!<CR>a
 nmap <F11> :set<Space>nu!<CR>
 
-set t_Co=256
-set bg=dark
-colorscheme desert256
-
-syntax on
-set title
-set nocompatible
-set autowrite
-
-" Show partial commands as you type them
-set showcmd
-
-set laststatus=2
-set statusline=%<%F\ %r%h%y[%{&ff}][%{&encoding}]%m%=%-13.(%5l_%3c%V%)%5LL%8.P
-
-
-" Задать ширину строки
-"set textwidth=79
-
-if v:version >= 703
-	" Подсвечивать границы
-	set colorcolumn=80
-endif
-" Перенос по словам
-set linebreak
-
 " php helpfuls
-" let php_sql_query = 1
+let php_sql_query = 1
 let php_baselib = 1
 let php_htmlInStrings = 1
 let php_noShortTags = 1
 let php_parent_error_close = 1
 let php_parent_error_open = 1
 let php_folding = 1
-
-set foldmethod=marker           "fdm:   looks for patterns of triple-braces in a file
-set foldcolumn=4                "fdc:   creates a small left-hand gutter for displaying fold info
-
-"do an incremental search
-set showmatch
-set hlsearch
-set incsearch
-set ignorecase
-set wrapscan
-
-" Correct indentation after opening a phpdocblock and automatic * on every line
-set formatoptions=qroct
 
 source ~/.vim/plugin/php-doc.vim
 inoremap <C-P> <ESC>:call PhpDocSingle()<CR>i
@@ -145,12 +171,14 @@ augroup filetypedetect
     au! BufRead,BufNewFile *.pp     setfiletype puppet
     au! BufRead,BufNewFile *httpd*.conf     setfiletype apache
     au! BufRead,BufNewFile *inc     setfiletype php
+    au! BufRead,BufNewFile *.phtml     setfiletype php
 augroup END
 
 " Nick wrote: Uncomment these lines to do syntax checking when you save
 "augroup Programming
 " clear auto commands for this group
 "autocmd!
+:autocmd FileType php noremap <C-L> :!php -l %<CR>
 "autocmd BufWritePost *.php !php -d display_errors=on -l <afile>
 "autocmd BufWritePost *.inc !php -d display_errors=on -l <afile>
 "autocmd BufWritePost *httpd*.conf !/etc/rc.d/init.d/httpd configtest
@@ -168,7 +196,6 @@ augroup END
 " enable filetype detection:
 filetype on
 
-
 "Autocomplit C-xC-o
 autocmd FileType tt2html set omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
@@ -185,52 +212,39 @@ inoremap <Nul> <C-x><C-o>
 " don't select first item, follow typing in autocomplete
 set completeopt=longest,menuone,preview
 
-" make searches case-insensitive, unless they contain upper-case letters:
-set ignorecase
-set smartcase
-
-"set ls=2            " allways show status line
-set ruler           " show the cursor position all the time
-
 "au BufNewFile,BufRead  *.pls    set syntax=dosini
-
-
 
 if &term == "xterm-color"
   fixdel
 endif
 
-" Enable folding by fold markers
-" this causes vi problems set foldmethod=marker 
-
-" Correct indentation after opening a phpdocblock and automatic * on every
-" line
-set formatoptions=qroct
-
-
-
 " The completion dictionary is provided by Rasmus:
 " http://lerdorf.com/funclist.txt
+" curl -o ~/.vim/phpfunclist.txt -v http://lerdorf.com/funclist.txt
 set dictionary-=~/.vim/phpfunclist.txt dictionary+=~/.vim/phpfunclist.txt
 " Use the dictionary completion
 set complete-=k complete+=k
+
+" MovingThroughCamelCaseWords
+nnoremap <silent><C-Left> :<C-u>cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%^','bW')<CR>
+nnoremap <silent><C-Right> :<C-u>cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%$','W')<CR>
+inoremap <silent><C-Left> <C-o>:cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%^','bW')<CR>
+inoremap <silent><C-Right> <C-o>:cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%$','W')<CR>
 
 " {{{ Autocompletion using the TAB key
 
 " This function determines, wether we are on the start of the line text (then tab indents) or
 " if we want to try autocompletion
-function InsertTabWrapper()
-    let col = col('.') - 1
-   if !col || getline('.')[col - 1] !~ '\k'
-        return "\<tab>"
-    else
-        return "\<c-p>"
-    endif
-endfunction
+"function InsertTabWrapper()
+    "let col = col('.') - 1
+   "if !col || getline('.')[col - 1] !~ '\k'
+        "return "\<tab>"
+    "else
+        "return "\<c-p>"
+    "endif
+"endfunction
 
 " Remap the tab key to select action with InsertTabWrapper
-inoremap <tab> <c-r>=InsertTabWrapper()<cr>
+"inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 
 " }}} Autocompletion using the TAB key
-
-
