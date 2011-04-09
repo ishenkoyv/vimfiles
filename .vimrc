@@ -15,6 +15,8 @@ set fencs=utf-8,cp1251,koi8-r,ucs-2,cp866
 set encoding=utf-8
 set fileencoding=utf-8
 
+let Grep_Skip_Dirs = '.svn'
+
 set t_Co=256
 set bg=dark
 colorscheme desert256
@@ -37,14 +39,21 @@ set showcmd
 
 set ruler           " show the cursor position all the time
 set laststatus=2	" allways show status line
-set statusline=%<%F\ %r%h%y[%{&ff}][%{&encoding}]%m%=%-13.(%5l_%3c%V%)%5LL%8.P
+set statusline=
+set statusline+=%<%F\ " filename
+set statusline+=%M\ "modified flag
+set statusline+=Line:%l/%L\ " line position, total, percents
+set statusline+=Col:%c\ " column number
+set statusline+=Buf:%-10.3n " buffer number
+set statusline+=%r%h%y " status flags
+set statusline+=[%{&ff}][%{&encoding}] " file type and encoding
 
 "set list "Show tabs, end of line etc.
 "set listchars=tab:▸\ ,eol:¬ 
 set listchars=tab:→\ ,eol:¬,trail:· 
 
 set foldmethod=marker           "fdm:   looks for patterns of triple-braces in a file
-set foldclose=all				" Autoclose folds, when moving out of them
+"set foldclose=all				" Autoclose folds, when moving out of them
 set foldcolumn=4                "fdc:   creates a small left-hand gutter for displaying fold info
 
 set scrolljump=5 				" Jump 5 lines when running out of the screen
@@ -110,6 +119,7 @@ vmap <F12> <esc>:NERDTreeToggle<cr>
 imap <F12> <esc>:NERDTreeToggle<cr>
 "End NERDTree
 
+map <F1> :vimgrep /todo/j *.php<CR>:cw<CR>
 nmap <silent> <F3> :set list!<CR>
 
 "Start BufExplorer
