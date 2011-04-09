@@ -27,7 +27,7 @@ colorscheme desert256
 if v:version >= 703
 	" Highlight line bounds
 	set colorcolumn=80
-	"set mouse=a
+	set mouse=a
 endif
 " Line break
 set linebreak
