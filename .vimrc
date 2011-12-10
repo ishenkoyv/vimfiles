@@ -27,7 +27,7 @@ colorscheme desert256
 if v:version >= 703
 	" Highlight line bounds
 	set colorcolumn=80
-	set mouse=a
+	"set mouse=a
 endif
 " Line break
 set linebreak
@@ -123,9 +123,9 @@ map <F1> :vimgrep /todo/j *.php<CR>:cw<CR>
 nmap <silent> <F3> :set list!<CR>
 
 "Start BufExplorer
-nmap <C-F5> <Esc>:BufExplorer<cr>
-vmap <C-F5> <esc>:BufExplorer<cr>
-imap <C-F5> <esc>:BufExplorer<cr>
+nmap <F5> <Esc>:BufExplorer<cr>
+vmap <F5> <esc>:BufExplorer<cr>
+imap <F5> <esc>:BufExplorer<cr>
 " F6 - previous buffer
 nmap <F6> :bp<cr>
 vmap <F6> <esc>:bp<cr>i
@@ -214,6 +214,8 @@ autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType c set omnifunc=ccomplete#Complete
+
+au BufRead,BufNewFile *.twig set syntax=htmljinja
 
 " Maps Omnicompletion to CTRL-space since ctrl-x ctrl-o is for Emacs-style RSI
 inoremap <Nul> <C-x><C-p>
