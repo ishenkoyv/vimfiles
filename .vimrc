@@ -77,6 +77,7 @@ set ai
 set ci
 
 set autoindent 
+set expandtab        "replace <TAB> with spaces
 set softtabstop=4
 set tabstop=4
 set shiftwidth=4
