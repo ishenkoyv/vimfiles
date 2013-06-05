@@ -105,10 +105,12 @@ noremap ,<CR> :put_<CR>
 "Ctags background scan
 nmap <silent> <F4>
 \ :!ctags -f %:p:h/tags
+\ --fields=+aimS
+\ --languages=php
 \ --links="yes"
-\ --langmap="php:+.php"
 \ -h ".php" -R --totals=yes 
 \ --exclude="\.svn"
+\ --exclude="\.git"
 \ --exclude="*.js" 
 \ --tag-relative=yes --PHP-kinds=+cfiv %:p:h <CR>
 
@@ -214,16 +216,16 @@ autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType c set omnifunc=ccomplete#Complete
+"autocmd FileType c set omnifunc=ccomplete#Complete
 
 au BufRead,BufNewFile *.twig set syntax=htmljinja
 
 " Maps Omnicompletion to CTRL-space since ctrl-x ctrl-o is for Emacs-style RSI
-inoremap <Nul> <C-x><C-p>
+"inoremap <Nul> <C-x><C-p>
 inoremap <Nul> <C-x><C-o>
 
 " don't select first item, follow typing in autocomplete
-set completeopt=longest,menuone,preview
+" set completeopt=longest,menuone,preview
 
 "au BufNewFile,BufRead  *.pls    set syntax=dosini
 
@@ -261,3 +263,14 @@ inoremap <silent><C-Right> <C-o>:cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\
 "inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 
 " }}} Autocompletion using the TAB key
+
+execute pathogen#infect()
+
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'gmarik/vundle'
+
+filetype plugin indent on
+
+Bundle 'shawncplus/phpcomplete.vim'
