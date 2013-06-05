@@ -120,6 +120,8 @@ set tags=./tags,tags
 nmap <F12> :NERDTreeToggle<cr>
 vmap <F12> <esc>:NERDTreeToggle<cr>
 imap <F12> <esc>:NERDTreeToggle<cr>
+
+"let g:NERDTreeWinPos = "right"
 "End NERDTree
 
 map <F1> :vimgrep /todo/j *.php<CR>:cw<CR>
@@ -144,7 +146,10 @@ set pastetoggle=<F9>
 
 " Class definition, methods and variables
 nnoremap <silent> <F8> :TlistToggle<CR>
-let tlist_php_settings = 'php;c:class;f:function'
+" let tlist_php_settings = 'php;c:class;f:function'
+let Tlist_Use_Right_Window   = 1
+" let Tlist_GainFocus_On_ToggleOpen = 1
+let Tlist_Show_One_File = 1 
 
 " Save the file
 nmap <F2> :w<cr>
@@ -225,7 +230,7 @@ au BufRead,BufNewFile *.twig set syntax=htmljinja
 inoremap <Nul> <C-x><C-o>
 
 " don't select first item, follow typing in autocomplete
-" set completeopt=longest,menuone,preview
+set completeopt=longest,menuone,preview
 
 "au BufNewFile,BufRead  *.pls    set syntax=dosini
 
@@ -274,3 +279,18 @@ Bundle 'gmarik/vundle'
 filetype plugin indent on
 
 Bundle 'shawncplus/phpcomplete.vim'
+
+let g:syntastic_auto_loc_list=1 " auto open error window when errors are detected
+let g:syntastic_check_on_open=1 " check for errors on file open
+let g:syntastic_enable_signs=1
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+let g:syntastic_mode_map = { 'mode': 'passive',                               
+                            \ 'active_filetypes': [],            
+                            \ 'passive_filetypes': [] } 
+
+map <leader>e :SyntasticCheck<CR>:Errors<cr><C-w>j
+
+Bundle 'stephpy/vim-php-cs-fixer'
+nnoremap <silent><leader>f :call PhpCsFixerFixFile()<CR>e:<CR>
+
