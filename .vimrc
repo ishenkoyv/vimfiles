@@ -1,4 +1,41 @@
-:filetype plugin on
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" Install vim-plug if not found
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+endif
+
+" Run PlugInstall if there are missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
+
+Plug 'phpactor/phpactor', {'for': 'php', 'tag': '*', 'do': 'composer install --no-dev -o'}
+Plug 'ncm2/ncm2'
+Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'roxma/nvim-yarp'
+Plug 'phpactor/ncm2-phpactor'
+Plug 'ncm2/ncm2-ultisnips'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+
+Plug 'dense-analysis/ale'
+Plug 'scrooloose/nerdtree'
+Plug 'jlanzarotta/bufexplorer'
+
+Plug 'Rican7/php-doc-modded'
+"Plug 'arnaud-lb/vim-php-namespace'
+"Plug 'vim-scripts/taglist.vim'
+Plug 'preservim/tagbar'
+Plug 'sudar/comments.vim'
+
+" Initialize plugin system
+call plug#end()
+
 
 syntax on
 set nocompatible
@@ -12,10 +49,8 @@ set autoread "re-read file has been changed automaticaly
 set ffs=unix,dos,mac
 set fencs=utf-8,cp1251,koi8-r,ucs-2,cp866
 
-set encoding=utf-8
-set fileencoding=utf-8
-
-let Grep_Skip_Dirs = '.svn'
+" set encoding=utf-8
+" set fileencoding=utf-8
 
 set t_Co=256
 set bg=dark
@@ -49,12 +84,12 @@ set statusline+=%r%h%y " status flags
 set statusline+=[%{&ff}][%{&encoding}] " file type and encoding
 
 "set list "Show tabs, end of line etc.
-"set listchars=tab:▸\ ,eol:¬ 
-set listchars=tab:→\ ,eol:¬,trail:· 
+"set listchars=tab:▸\ ,eol:¬
+set listchars=tab:→\ ,eol:¬,trail:·
 
 set foldmethod=marker           "fdm:   looks for patterns of triple-braces in a file
 "set foldclose=all				" Autoclose folds, when moving out of them
-set foldcolumn=4                "fdc:   creates a small left-hand gutter for displaying fold info
+"set foldcolumn=4                "fdc:   creates a small left-hand gutter for displaying fold info
 
 set scrolljump=5 				" Jump 5 lines when running out of the screen
 set scrolloff=3					" Indicate jump out of the screen when 3 lines before end of the screen
@@ -65,10 +100,6 @@ set backspace=start,eol,indent
 " Allow file inline modelines to provide settings
 set modeline
 
-" Enable folding by fold markers
-" this causes vi problems 
-" set foldmethod=marker 
-
 " Correct indentation after opening a phpdocblock and automatic * on every line
 set formatoptions=qroct
 
@@ -76,15 +107,13 @@ set formatoptions=qroct
 set ai
 set ci
 
-set autoindent 
+set autoindent
 set expandtab        "replace <TAB> with spaces
 set softtabstop=4
 set tabstop=4
 set shiftwidth=4
 set shiftround                  "sr:    rounds indent to a multiple of shiftwidth
 set smarttab
-"set et
-"set wrapmargin=89
 
 
 "do an incremental search
@@ -100,26 +129,82 @@ set smartcase
 inoremap <c-u> <c-g>u<c-u>
 inoremap <c-w> <c-g>u<c-w>
 
-" Shortcut to add new blank line without entering insert mode
-noremap ,<CR> :put_<CR>
-"Ctags background scan
-nmap <silent> <F4>
-\ :!ctags -f %:p:h/tags
-\ --fields=+aimS
-\ --languages=php
-\ --links="yes"
-\ -h ".php" -R --totals=yes 
-\ --exclude="\.svn"
-\ --exclude="\.git"
-\ --exclude="*.js" 
-\ --tag-relative=yes --PHP-kinds=+cfiv %:p:h <CR>
+" delete trailing space when saving files
+func! DeleteTrailingWS()
+    exe "normal mz"
+    %s/\s\+$//ge
+    exe "normal `z"
+    retab
+endfunc
 
-set tags=./tags,tags
+autocmd BufWrite *.php,*.js,*.jsx,*.vue,*.twig,*.html,*.sh,*.yaml,*.yml,*.clj,*.cljs,*.cljc :call DeleteTrailingWS()
+
+
+"" Set the PHP bin to an additional installation that has no XDEBUG installed
+let g:phpactorPhpBin = '/opt/lampp/bin/php'
+
+"" Make ncm2 work automatically
+let g:python3_host_prog='/usr/bin/python3'
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+"" When autocompleting auto select the first one and do not autoinsert.
+set completeopt=noinsert,menuone
+
+"" Enable tab cyle thorought suggestions.
+"" ctrl + j: Next item (down).
+"" ctrl + k: Previous item (up).
+inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+"" When pressing CTRL+u on a suggestion, it will expand with parameters.
+"" inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+inoremap <silent> <expr> <CR> (pumvisible() ? ncm2_ultisnips#expand_or("\<CR>", 'n') : "\<CR>")
+
+"" Tab and Shift-Tab will cycle thorough parameters.
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+
+" ALE
+let g:ale_fix_on_save = 0
+let g:ale_lint_delay = 1000
+let b:ale_warn_about_trailing_whitespace = 1
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_save = 1
+
+let g:ale_fixers = {
+      \   'php': ['phpcbf'],
+      \}
+let g:ale_linters = {
+      \   'php': ['php', 'phpcs'],
+      \}
+let g:ale_php_phpcbf_standard = 'PSR12'
+let g:ale_php_phpcs_standard = 'PSR12'
+
+nnoremap <leader>f :ALEFix<cr>
+
+inoremap <C-P> <ESC>:call PhpDocSingle()<CR>i
+nnoremap <C-P> :call PhpDocSingle()<CR>
+vnoremap <C-P> :call PhpDocRange()<CR>
+
+"function! IPhpInsertUse()
+"    call PhpInsertUse()
+"    call feedkeys('a',  'n')
+"endfunction
+"autocmd FileType php inoremap <Leader>u <Esc>:call IPhpInsertUse()<CR>
+"autocmd FileType php noremap <Leader>u :call PhpInsertUse()<CR>
+
+nnoremap <silent> gd :call phpactor#GotoDefinition()<CR>
+nnoremap <silent> fr :call phpactor#FindReferences()()<CR>
 
 "Start NERDTree
 nmap <F12> :NERDTreeToggle<cr>
 vmap <F12> <esc>:NERDTreeToggle<cr>
 imap <F12> <esc>:NERDTreeToggle<cr>
+
+nnoremap <leader>T :NERDTreeToggle<cr>
+nnoremap <leader>nf :NERDTreeFind<cr>
 
 "let g:NERDTreeWinPos = "right"
 "End NERDTree
@@ -145,11 +230,12 @@ imap <F7> <esc>:bn<cr>i
 set pastetoggle=<F9>
 
 " Class definition, methods and variables
-nnoremap <silent> <F8> :TlistToggle<CR>
+"nnoremap <silent> <F8> :TlistToggle<CR>
+nnoremap <silent> <F8> :TagbarToggle<CR>
 " let tlist_php_settings = 'php;c:class;f:function'
-let Tlist_Use_Right_Window   = 1
+"let Tlist_Use_Right_Window   = 1
 " let Tlist_GainFocus_On_ToggleOpen = 1
-let Tlist_Show_One_File = 1 
+"let Tlist_Show_One_File = 1
 
 " Save the file
 nmap <F2> :w<cr>
@@ -160,137 +246,8 @@ imap <F2> <esc>:w<cr>i
 imap <F11> <Esc>:set<Space>nu!<CR>a
 nmap <F11> :set<Space>nu!<CR>
 
-" php helpfuls
-let php_sql_query = 1
-let php_baselib = 1
-let php_htmlInStrings = 1
-let php_noShortTags = 1
-let php_parent_error_close = 1
-let php_parent_error_open = 1
-let php_folding = 1
-
-source ~/.vim/plugin/php-doc.vim
-inoremap <C-P> <ESC>:call PhpDocSingle()<CR>i
-nnoremap <C-P> :call PhpDocSingle()<CR>
-vnoremap <C-P> :call PhpDocRange()<CR> 
-
-" Wrap visual selectiosn with chars
-":vnoremap ( "zdi^V(<C-R>z)<ESC>
-":vnoremap { "zdi^V{<C-R>z}<ESC>
-":vnoremap [ "zdi^V[<C-R>z]<ESC>
-":vnoremap ' "zdi'<C-R>z'<ESC>
-":vnoremap " "zdi^V"<C-R>z^V"<ESC>
-
-" Detect filetypes
-"if exists("did_load_filetypes")
-"    finish
-"endif
-augroup filetypedetect
-    au! BufRead,BufNewFile *.pp     setfiletype puppet
-    au! BufRead,BufNewFile *httpd*.conf     setfiletype apache
-    au! BufRead,BufNewFile *inc     setfiletype php
-    au! BufRead,BufNewFile *.phtml     setfiletype php
-augroup END
-
-" Nick wrote: Uncomment these lines to do syntax checking when you save
-"augroup Programming
-" clear auto commands for this group
-"autocmd!
-:autocmd FileType php noremap <C-L> :!php -l %<CR>
-"autocmd BufWritePost *.php !php -d display_errors=on -l <afile>
-"autocmd BufWritePost *.inc !php -d display_errors=on -l <afile>
-"autocmd BufWritePost *httpd*.conf !/etc/rc.d/init.d/httpd configtest
-"autocmd BufWritePost *.bash !bash -n <afile>
-"autocmd BufWritePost *.sh !bash -n <afile>
-"autocmd BufWritePost *.pl !perl -c <afile>
-"autocmd BufWritePost *.perl !perl -c <afile>
-"autocmd BufWritePost *.xml !xmllint --noout <afile>
-"autocmd BufWritePost *.xsl !xmllint --noout <afile>
-"autocmd BufWritePost *.js !~/jslint/jsl -conf ~/jslint/jsl.default.conf -nologo -nosummary -process <afile>
-"autocmd BufWritePost *.rb !ruby -c <afile>
-"autocmd BufWritePost *.pp !puppet --parseonly <afile>
-"augroup en
-
-" enable filetype detection:
-filetype on
-
-"Autocomplit C-xC-o
-autocmd FileType tt2html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-"autocmd FileType c set omnifunc=ccomplete#Complete
-
-au BufRead,BufNewFile *.twig set syntax=htmljinja
-
-" Maps Omnicompletion to CTRL-space since ctrl-x ctrl-o is for Emacs-style RSI
-"inoremap <Nul> <C-x><C-p>
-inoremap <Nul> <C-x><C-o>
-
-" don't select first item, follow typing in autocomplete
-set completeopt=longest,menuone,preview
-
-"au BufNewFile,BufRead  *.pls    set syntax=dosini
-
-if &term == "xterm-color"
-  fixdel
-endif
-
-" The completion dictionary is provided by Rasmus:
-" http://lerdorf.com/funclist.txt
-" curl -o ~/.vim/phpfunclist.txt -v http://lerdorf.com/funclist.txt
-set dictionary-=~/.vim/phpfunclist.txt dictionary+=~/.vim/phpfunclist.txt
-" Use the dictionary completion
-set complete-=k complete+=k
-
-" MovingThroughCamelCaseWords
-nnoremap <silent><C-Left> :<C-u>cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%^','bW')<CR>
-nnoremap <silent><C-Right> :<C-u>cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%$','W')<CR>
-inoremap <silent><C-Left> <C-o>:cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%^','bW')<CR>
-inoremap <silent><C-Right> <C-o>:cal search('\<\<Bar>\U\@<=\u\<Bar>\u\ze\%(\U\&\>\@!\)\<Bar>\%$','W')<CR>
-
-" {{{ Autocompletion using the TAB key
-
-" This function determines, wether we are on the start of the line text (then tab indents) or
-" if we want to try autocompletion
-"function InsertTabWrapper()
-    "let col = col('.') - 1
-   "if !col || getline('.')[col - 1] !~ '\k'
-        "return "\<tab>"
-    "else
-        "return "\<c-p>"
-    "endif
-"endfunction
-
-" Remap the tab key to select action with InsertTabWrapper
-"inoremap <tab> <c-r>=InsertTabWrapper()<cr>
-
-" }}} Autocompletion using the TAB key
-
-execute pathogen#infect()
-
-filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-Bundle 'gmarik/vundle'
-
-filetype plugin indent on
-
-Bundle 'shawncplus/phpcomplete.vim'
-
-let g:syntastic_auto_loc_list=1 " auto open error window when errors are detected
-let g:syntastic_check_on_open=1 " check for errors on file open
-let g:syntastic_enable_signs=1
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-let g:syntastic_mode_map = { 'mode': 'passive',                               
-                            \ 'active_filetypes': [],            
-                            \ 'passive_filetypes': [] } 
-
-map <leader>e :SyntasticCheck<CR>:Errors<cr><C-w>j
-
-Bundle 'stephpy/vim-php-cs-fixer'
-nnoremap <silent><leader>f :call PhpCsFixerFixFile()<CR>e:<CR>
-
+:nmap \t :set expandtab tabstop=4 shiftwidth=4 softtabstop=4<CR>
+:nmap \T :set expandtab tabstop=8 shiftwidth=8 softtabstop=4<CR>
+:nmap \M :set noexpandtab tabstop=8 softtabstop=4 shiftwidth=4<CR>
+:nmap \m :set expandtab tabstop=2 shiftwidth=2 softtabstop=2<CR>
+:nmap \w :setlocal wrap!<CR>:setlocal wrap?<CR>
